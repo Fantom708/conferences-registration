@@ -1,0 +1,41 @@
+### GET request all Conferences
+http://localhost:8080/conferences
+
+### GET request all Reports by Conference id
+http://localhost:8080/conferences/1/talks
+
+### POST request to add a new Conference
+POST http://localhost:8080/conferences
+Content-Type: application/json
+
+  {
+    "name": "Курсы языковой школы MasterCLASS",
+    "topic": "Английский для дошкольников",
+    "amountParticipants":100,
+    "date": "2020-04-01T16:35:51",
+    "reports": []
+  }
+
+### PUT request to edit an existing Conference
+PUT http://localhost:8080/conferences/1
+Content-Type: application/json
+
+{
+  "name": "MEDICAL DEVICE FORUM 2020",
+  "topic": "Влияние Регламента о медицинских изделиях (MDR) на производителей. Новые обязательства для импортеров и дистрибьюторов.",
+  "date": "2020-04-01T16:35:51",
+  "amountParticipants":150
+}
+
+### POST request to add a Report to the Conference
+POST http://localhost:8080/conferences/1/talks
+Content-Type: application/json
+
+{
+  "name": "Новый регламент MDR",
+  "description": "Новые роли и их обязательства в соответствии с MDR",
+  "typeReport": "WORKSHOP",
+  "reporter": "Popov N.K."
+}
+
+###
