@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,11 +32,9 @@ public class Conference {
     @NotEmpty(message = "The conference name can not be missed or empty")
     private String topic;
 
-    // TODO Date format
-//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-//    @NotEmpty(message = "The conference date can not be missed or empty")
+    @NotNull(message = "The conference date can not be missed or empty")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime dateStart;
+    private LocalDate dateStart;
 
     @Min(value = 100, message = "The number of participants can not be missed, empty and not less 100")
 //    @NotNull(message = "The number of participants can not be missed or empty")

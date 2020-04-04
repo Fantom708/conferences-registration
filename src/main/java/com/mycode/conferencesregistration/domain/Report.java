@@ -29,7 +29,8 @@ public class Report {
     @NotEmpty(message = "The report description can not be missed or empty")
     private String description;
 
-    @NotEmpty(message = "The report type can not be missed or empty")
+    // TODO
+//    @NotEmpty(message = "The report type can not be missed or empty")
     @Enumerated(EnumType.STRING)
     private ReportType typeReport;
 

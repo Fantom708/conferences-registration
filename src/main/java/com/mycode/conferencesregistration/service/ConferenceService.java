@@ -2,14 +2,16 @@ package com.mycode.conferencesregistration.service;
 
 import com.mycode.conferencesregistration.domain.Conference;
 import com.mycode.conferencesregistration.domain.Report;
-import com.mycode.conferencesregistration.exceptions.ConferenceNotFoundException;
-import com.mycode.conferencesregistration.exceptions.ExistsConferenceNameException;
+import com.mycode.conferencesregistration.exceptions.*;
 import com.mycode.conferencesregistration.repo.ConferenceRepo;
 import com.mycode.conferencesregistration.repo.ReportRepo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +21,12 @@ import java.util.Optional;
  */
 @Service
 public class ConferenceService {
+
+    @Value("${maxUseReports}")
+    private int maxUseReports;
+
+    @Value("${dayToConferenceRegistration}")
+    private long dayToConferenceRegistration;
 
     private final ReportRepo reportRepo;
     private final ConferenceRepo conferenceRepo;
@@ -50,8 +58,16 @@ public class ConferenceService {
 
     public Conference addConference(Conference conference) {
 
-        Conference conf  = conferenceRepo.findByNameIgnoreCase(conference.getName())
-                .orElseThrow(() -> new ExistsConferenceNameException(conference.getName()));
+        // Перевірка унікальності назви конференції
+        if (!conferenceRepo.findByNameIgnoreCase(conference.getName()).isEmpty()) {
+            throw new ExistsConferenceNameException(conference.getName());
+        }
+
+        //Перевірка вільної дати проведення конференції
+        if (!conferenceRepo.findByDateStart(conference.getDateStart()).isEmpty()) {
+            throw new DateConferenceIsBusyException(conference.getDateStart());
+        }
+
         return conferenceRepo.save(conference);
     }
 
@@ -64,7 +80,25 @@ public class ConferenceService {
         return conferenceRepo.save(conference);
     }
 
+    // TODO use transaction
+    // TODO move to Report
     public Report addReportToConference(Conference conference, Report report) {
+
+        // Перевірка унікальності назви звіту
+        if (!reportRepo.findByNameIgnoreCase(report.getName()).isEmpty()) {
+            throw new ExistsReportNameException(report.getName());
+        }
+
+        // Перевірка максимально допустимої кількості звітів по звітуючому
+        if (reportRepo.findByReporterIgnoreCase(report.getReporter()).size() >= maxUseReports) {
+            throw new ReportsLimitException(report.getReporter());
+        }
+
+        // Перевірка дати подачі заявки на участь у конференції
+        if (ChronoUnit.DAYS.between(LocalDate.now(), conference.getDateStart())<= dayToConferenceRegistration) {
+            throw new ConferenceRegistrationException();
+        }
+
         conference.getReports().add(report);
         reportRepo.save(report);
 

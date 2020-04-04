@@ -6,6 +6,6 @@ package com.mycode.conferencesregistration.exceptions;
 public class ExistsConferenceNameException extends RuntimeException {
 
     public ExistsConferenceNameException(String name) {
-        super("The name conference [" + name + "] has already used");
+        super("The name of conference [" + name + "] has already used");
     }
 }
