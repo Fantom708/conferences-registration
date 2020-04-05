@@ -2,40 +2,39 @@
 http://localhost:8080/conferences
 
 ### GET request all Reports by Conference id
-http://localhost:8080/conferences/7/talks
+http://localhost:8080/conferences/5/talks
 
 ### POST request to add a new Conference
 POST http://localhost:8080/conferences
 Content-Type: application/json
 
   {
-    "name": "Мероприятия для юристов-практиков",
-    "topic": "Онлайн конференция: как пережить весну 2020",
-    "amountParticipants":100,
-    "dateStart": "2020-04-01",
-    "reports": []
+    "name": "Курсы языковой школы MasterCLASS",
+    "topic": "Английский для дошкольников",
+    "dateStart": "2020-05-21",
+    "amountParticipants":100
   }
 
 ### PUT request to edit an existing Conference
-PUT http://localhost:8080/conferences/7
+PUT http://localhost:8080/conferences/1
 Content-Type: application/json
 
 {
   "name": "MEDICAL DEVICE FORUM 2020",
-  "topic": "Влияние Регламента о медицинских изделиях (MDR) на производителей. Новые обязательства для импортеров и дистрибьюторов.",
+  "topic": "Влияние Регламента о медицинских изделиях (MDR) на производителей. Новые обязательства для импортеров и дистрибьюторов. И многое другое.",
   "dateStart": "2020-05-05",
   "amountParticipants":150
 }
 
 ### POST request to add a Report to the Conference
-POST http://localhost:8080/conferences/7/talks
+POST http://localhost:8080/conferences/3/talks
 Content-Type: application/json
 
 {
-  "name": "Новый регламент MDR_4",
-  "description": "Новые роли и их обязательства в соответствии с MDR",
-  "typeReport": "WORKSHOP",
-  "reporter": "Popov N.K._4"
+  "name": "Программирование в Java",
+  "description": "Семинар, 16 академических часов, online-трансляция",
+  "typeReport": "MASTER_CLASS",
+  "reporter": "Король Р.В."
 }
 
 ###

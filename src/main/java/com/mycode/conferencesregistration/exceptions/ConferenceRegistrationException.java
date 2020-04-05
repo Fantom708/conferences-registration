@@ -5,7 +5,7 @@ package com.mycode.conferencesregistration.exceptions;
  */
 public class ConferenceRegistrationException extends RuntimeException {
 
-    public ConferenceRegistrationException() {
-        super("Registration in less than 30 days before the conference is forbidden");
+    public ConferenceRegistrationException(long days) {
+        super(String.format("Registration in less than %d days before the conference is forbidden", days));
     }
 }

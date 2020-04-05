@@ -1,12 +1,12 @@
 package com.mycode.conferencesregistration.controller;
 
-import com.mycode.conferencesregistration.domain.Conference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.mycode.conferencesregistration.domain.Report;
-import com.mycode.conferencesregistration.exceptions.ConferenceNotFoundException;
+import com.mycode.conferencesregistration.domain.Views;
 import com.mycode.conferencesregistration.service.ReportService;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Set;
 
 /**
@@ -23,15 +23,20 @@ public class ReportController {
     }
 
     @GetMapping("/{conference_id}/talks")
+    @JsonView(Views.UserInfo.class)
     public Set<Report> getReportsByConferenceId(
-//            @PathVariable("conference_id") Conference conference,
             @PathVariable("conference_id") Long id
     ) {
         return reportService.getReports(id);
     }
 
-/*    @ExceptionHandler(ConferenceNotFoundException.class)
-    @ResponseStatus(value= HttpStatus.BAD_REQUEST, reason="Bad recommendations!!!")
-    void onSaveError() {
-    }*/
+    @PostMapping("/{conference_id}/talks")
+    @JsonView(Views.FullInfo.class)
+    public Report addReport(
+            @Valid @RequestBody Report report,
+            @PathVariable("conference_id") Long id) {
+
+        return reportService.addReportToConference(id, report);
+    }
+
 }

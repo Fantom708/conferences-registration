@@ -1,4 +1,4 @@
-create sequence hibernate_sequence start 1 increment 1;
+create sequence hibernate_sequence start 10 increment 1;
 
 create table conference (
      id int8 not null,
@@ -19,15 +19,15 @@ create table report (
 );
 
 create table conferences_reports (
-     report_id int8 not null,
      conference_id int8 not null,
-     primary key (report_id, conference_id)
+     report_id int8 not null,
+     primary key (conference_id, report_id)
 );
 
 alter table if exists conferences_reports
      add constraint conference_rep_fk
-     foreign key (conference_id) references report;
+     foreign key (conference_id) references conference;
 
 alter table if exists conferences_reports
      add constraint report_conf_fk
-     foreign key (report_id) references conference;
+     foreign key (report_id) references report;
