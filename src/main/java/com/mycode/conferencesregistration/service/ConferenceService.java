@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,9 @@ public class ConferenceService {
 
     @Transactional
     public Conference addConference(Conference conference) {
-        checkConference(conference);
+
+        checkConferenceName(conference.getName());
+        checkConferenceDate(conference.getDateStart());
 
         return conferenceRepo.save(conference);
     }
@@ -44,22 +47,31 @@ public class ConferenceService {
         Conference conference = getConference(id)
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
 
-        checkConference(conference);
+        if (!conference.getName().equals(newConference.getName())) {
+            checkConferenceName(newConference.getName());
+        }
+        if (!conference.getDateStart().equals(newConference.getDateStart())) {
+            checkConferenceDate(newConference.getDateStart());
+        }
 
         BeanUtils.copyProperties(newConference, conference, "id", "reports");
 
         return conferenceRepo.save(conference);
     }
 
-    private void checkConference(Conference conference) {
+    private void checkConferenceName(String name) {
+
         // Перевірка унікальності назви конференції
-        if (!conferenceRepo.findByNameIgnoreCase(conference.getName()).isEmpty()) {
-            throw new ExistsConferenceNameException(conference.getName());
+        if (!conferenceRepo.findByNameIgnoreCase(name).isEmpty()) {
+            throw new ExistsConferenceNameException(name);
         }
+    }
+
+    private void checkConferenceDate(LocalDate date) {
 
         //Перевірка вільної дати проведення конференції
-        if (!conferenceRepo.findByDateStart(conference.getDateStart()).isEmpty()) {
-            throw new DateConferenceIsBusyException(conference.getDateStart());
+        if (!conferenceRepo.findByDateStart(date).isEmpty()) {
+            throw new DateConferenceIsBusyException(date);
         }
     }
 

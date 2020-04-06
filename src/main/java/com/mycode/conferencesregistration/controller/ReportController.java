@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.mycode.conferencesregistration.domain.Report;
 import com.mycode.conferencesregistration.domain.Views;
 import com.mycode.conferencesregistration.service.ReportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,13 +15,11 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("conferences")
+@RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService reportService;
 
-    public ReportController(ReportService reportService) {
-        this.reportService = reportService;
-    }
 
     @GetMapping("/{conference_id}/talks")
     @JsonView(Views.UserInfo.class)
