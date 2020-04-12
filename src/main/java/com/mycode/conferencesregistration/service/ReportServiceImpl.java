@@ -2,15 +2,16 @@ package com.mycode.conferencesregistration.service;
 
 import com.mycode.conferencesregistration.domain.Conference;
 import com.mycode.conferencesregistration.domain.Report;
-import com.mycode.conferencesregistration.domain.dto.ReportDto;
+import com.mycode.conferencesregistration.domain.dto.ReportDtoAddRequest;
+import com.mycode.conferencesregistration.domain.dto.ReportDtoGetResponse;
 import com.mycode.conferencesregistration.exceptions.ConferenceNotFoundException;
-import com.mycode.conferencesregistration.exceptions.ReportRegistrationException;
 import com.mycode.conferencesregistration.exceptions.ExistsReportNameException;
+import com.mycode.conferencesregistration.exceptions.ReportRegistrationException;
 import com.mycode.conferencesregistration.exceptions.ReportsLimitException;
+import com.mycode.conferencesregistration.config.ConferenceSettings;
 import com.mycode.conferencesregistration.repo.ConferenceRepo;
 import com.mycode.conferencesregistration.repo.ReportRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,29 +26,23 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ReportServiceImpl implements ReportService {
 
-    @Value("${maxUseReports}")
-    private int maxUseReports;
-
-    @Value("${dayToConferenceRegistration}")
-    private long dayToConferenceRegistration;
-
     private final ReportRepo reportRepo;
     private final ConferenceRepo conferenceRepo;
+    private final ConferenceSettings conferenceSettings;
 
 
     @Override
-    public Set<Report> getReports(Long idConference) {
+    public Set<ReportDtoGetResponse> getReports(Long idConference) {
 
         Conference conference = conferenceRepo.findById(idConference)
                 .orElseThrow(() -> new ConferenceNotFoundException(idConference));
 
-        return conference.getReports();
+        return conference.toDtoGetResponse().getReports();
     }
-
 
     @Transactional
     @Override
-    public long addReportToConference(Long id, ReportDto report) {
+    public long addReportToConference(Long id, ReportDtoAddRequest report) {
 
         Conference conference = conferenceRepo.findById(id)
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
@@ -58,13 +53,13 @@ public class ReportServiceImpl implements ReportService {
         }
 
         // Перевірка максимально допустимої кількості звітів по звітуючому
-        if (reportRepo.findByReporterIgnoreCase(report.getReporter()).size() >= maxUseReports) {
-            throw new ReportsLimitException(report.getReporter());
+        if (reportRepo.findByReporterIgnoreCase(report.getReporter()).size() >= conferenceSettings.getMaxUserReports()) {
+            throw new ReportsLimitException(report.getReporter(), conferenceSettings.getMaxUserReports());
         }
 
         // Перевірка дати подачі заявки на участь у конференції
-        if (ChronoUnit.DAYS.between(LocalDate.now(), conference.getDateStart()) <= dayToConferenceRegistration) {
-            throw new ReportRegistrationException(dayToConferenceRegistration);
+        if (ChronoUnit.DAYS.between(LocalDate.now(), conference.getDateStart()) <= conferenceSettings.getDayToConferenceRegistration()) {
+            throw new ReportRegistrationException(conferenceSettings.getDayToConferenceRegistration());
         }
 
         Report dbReport = new Report(report.getName(), report.getDescription(), report.getTypeReport(), report.getReporter());

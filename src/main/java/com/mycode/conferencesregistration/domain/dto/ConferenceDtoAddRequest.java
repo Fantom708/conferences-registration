@@ -1,7 +1,8 @@
 package com.mycode.conferencesregistration.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -11,8 +12,9 @@ import java.time.LocalDate;
 /**
  * @author Yurii Kovtun
  */
-@Data
-public class ConferenceDto {
+@Getter
+@AllArgsConstructor
+public class ConferenceDtoAddRequest {
 
     @NotEmpty(message = "The conference name can not be missed or empty")
     private String name;

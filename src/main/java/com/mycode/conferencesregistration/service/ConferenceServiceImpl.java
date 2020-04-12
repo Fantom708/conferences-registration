@@ -1,7 +1,8 @@
 package com.mycode.conferencesregistration.service;
 
 import com.mycode.conferencesregistration.domain.Conference;
-import com.mycode.conferencesregistration.domain.dto.ConferenceDto;
+import com.mycode.conferencesregistration.domain.dto.ConferenceDtoAddRequest;
+import com.mycode.conferencesregistration.domain.dto.ConferenceDtoGetResponse;
 import com.mycode.conferencesregistration.exceptions.ConferenceNotFoundException;
 import com.mycode.conferencesregistration.exceptions.DateConferenceIsBusyException;
 import com.mycode.conferencesregistration.exceptions.ExistsConferenceNameException;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Yurii Kovtun
@@ -24,12 +25,15 @@ public class ConferenceServiceImpl implements ConferenceService {
     private final ConferenceRepo conferenceRepo;
 
     @Override
-    public List<Conference> findAll() {
-        return conferenceRepo.findAll();
+    public List<ConferenceDtoGetResponse> findAll() {
+        return conferenceRepo.findAll()
+                .stream()
+                .map(item -> item.toDtoGetResponse())
+                .collect(Collectors.toList());
     }
 
     @Override
-    public long addConference(ConferenceDto conference) {
+    public long addConference(ConferenceDtoAddRequest conference) {
 
         checkConferenceName(conference.getName());
         checkConferenceDate(conference.getDateStart());
@@ -44,8 +48,8 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     @Override
-    public void editConference(Long id, ConferenceDto newConference) {
-        Conference conference = getConference(id)
+    public void editConference(Long id, ConferenceDtoAddRequest newConference) {
+        Conference conference = conferenceRepo.findById(id)
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
 
         if (!conference.getName().equals(newConference.getName())) {
@@ -55,17 +59,12 @@ public class ConferenceServiceImpl implements ConferenceService {
             checkConferenceDate(newConference.getDateStart());
         }
 
-        BeanUtils.copyProperties(newConference, conference, "id", "reports");
+        BeanUtils.copyProperties(newConference, conference);
 
         conferenceRepo.save(conference);
     }
 
-    private Optional<Conference> getConference(Long id) {
-        return conferenceRepo.findById(id);
-    }
-
     private void checkConferenceName(String name) {
-
         // Перевірка унікальності назви конференції
         if (!conferenceRepo.findByNameIgnoreCase(name).isEmpty()) {
             throw new ExistsConferenceNameException(name);
@@ -73,7 +72,6 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     private void checkConferenceDate(LocalDate date) {
-
         //Перевірка вільної дати проведення конференції
         if (!conferenceRepo.findByDateStart(date).isEmpty()) {
             throw new DateConferenceIsBusyException(date);

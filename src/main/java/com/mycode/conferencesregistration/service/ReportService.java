@@ -1,7 +1,7 @@
 package com.mycode.conferencesregistration.service;
 
-import com.mycode.conferencesregistration.domain.Report;
-import com.mycode.conferencesregistration.domain.dto.ReportDto;
+import com.mycode.conferencesregistration.domain.dto.ReportDtoAddRequest;
+import com.mycode.conferencesregistration.domain.dto.ReportDtoGetResponse;
 
 import java.util.Set;
 
@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public interface ReportService {
 
-    Set<Report> getReports(Long idConference);
+    Set<ReportDtoGetResponse> getReports(Long idConference);
 
-    long addReportToConference(Long id, ReportDto report);
+    long addReportToConference(Long id, ReportDtoAddRequest report);
 }

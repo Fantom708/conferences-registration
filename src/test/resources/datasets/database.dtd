@@ -1,0 +1,19 @@
+<!ELEMENT dataset (CONFERENCE|REPORT|CONFERENCES_REPORTS)*>
+        <!ELEMENT CONFERENCE (#PCDATA)>
+        <!ATTLIST CONFERENCE
+                id CDATA #REQUIRED
+                date_start CDATA #REQUIRED
+                name CDATA #REQUIRED
+                topic CDATA #REQUIRED
+                amount_participants CDATA #REQUIRED>
+        <!ELEMENT REPORT (#PCDATA)>
+        <!ATTLIST REPORT
+                id CDATA #REQUIRED
+                reporter CDATA #REQUIRED
+                type_report CDATA #REQUIRED
+                name CDATA #REQUIRED
+                description CDATA #REQUIRED>
+        <!ELEMENT CONFERENCES_REPORTS (#PCDATA)>
+        <!ATTLIST CONFERENCES_REPORTS
+                report_id CDATA #REQUIRED
+                conference_id CDATA #REQUIRED>

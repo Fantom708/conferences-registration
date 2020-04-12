@@ -16,11 +16,11 @@ Content-Type: application/json
   }
 
 ### PUT request to edit an existing Conference
-PUT http://localhost:8080/conferences/12
+PUT http://localhost:8080/conferences/1
 Content-Type: application/json
 
 {
-  "name": "MEDICAL DEVICE FORUM 2020_V3",
+  "name": "MEDICAL DEVICE FORUM 2020",
   "topic": "Влияние Регламента о медицинских изделиях (MDR) на производителей. Новые обязательства для импортеров и дистрибьюторов. И многое другое.",
   "dateStart": "2020-05-05",
   "amountParticipants":150
@@ -34,7 +34,7 @@ Content-Type: application/json
   "name": "Программирование в Java",
   "description": "Семинар, 16 академических часов, online-трансляция",
   "typeReport": "MASTER_CLASS",
-  "reporter": "Король Р.В._2"
+  "reporter": "Король Р.В."
 }
 
 ###
