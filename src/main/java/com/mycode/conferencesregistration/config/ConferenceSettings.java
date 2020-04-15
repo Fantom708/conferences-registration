@@ -17,10 +17,10 @@ import javax.validation.constraints.Min;
 public class ConferenceSettings {
 
     /**
-     * Maximum number of user reports allowed for one conference
+     * Maximum number of user talks allowed for one conference
      */
     @Min(value = 1)
-    private int maxUserReports = 3;
+    private int maxUserTalks = 3;
 
     /**
      * Min days before registration of the report at the conference

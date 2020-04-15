@@ -1,14 +1,12 @@
 package com.mycode.conferencesregistration.domain;
 
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoAddRequest;
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoGetResponse;
+import com.mycode.conferencesregistration.domain.dto.ConferenceDto;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Yurii Kovtun
@@ -38,20 +36,20 @@ public class Conference {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "conferences_reports",
+            name = "conferences_talks",
             joinColumns = {@JoinColumn(name = "conference_id")},
-            inverseJoinColumns = {@JoinColumn(name = "report_id")}
+            inverseJoinColumns = {@JoinColumn(name = "talk_id")}
     )
-    private Set<Report> reports = new HashSet<>();
+    private Set<Talk> talks = new HashSet<>();
 
-    public ConferenceDtoAddRequest toDtoAddRequest() {
-        return new ConferenceDtoAddRequest(name, topic, dateStart, amountParticipants);
-    }
+    // TODO kill ?
+//    public Set<TalkDto> toDtoTalks() {
+//        return talks.stream().
+//                map(item -> item.toDto()).
+//                collect(Collectors.toSet());
+//    }
 
-    public ConferenceDtoGetResponse toDtoGetResponse() {
-        return new ConferenceDtoGetResponse(id, name, topic, dateStart, amountParticipants,
-                reports.stream()
-                        .map(rep -> rep.toDtoGetResponse())
-                        .collect(Collectors.toSet()));
+    public ConferenceDto toDto() {
+        return new ConferenceDto(id, name, topic, dateStart, amountParticipants);
     }
 }

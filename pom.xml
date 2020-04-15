@@ -52,18 +52,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-<!--                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-actuator-autoconfigure</artifactId>
-                </dependency>-->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
         </dependency>
-        <!--        <dependency>
-                    <groupId>io.prometheus</groupId>
-                    <artifactId>simpleclient_pushgateway</artifactId>
-                </dependency>-->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
@@ -72,10 +64,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -103,15 +91,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.restdocs</groupId>
-            <artifactId>spring-restdocs-mockmvc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.database-rider</groupId>
             <artifactId>rider-core</artifactId>
             <version>1.11.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
         </dependency>
 
     </dependencies>

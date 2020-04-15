@@ -1,11 +1,13 @@
 package com.mycode.conferencesregistration.service;
 
+import com.mycode.conferencesregistration.dao.ConferenceDao;
 import com.mycode.conferencesregistration.domain.Conference;
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoAddRequest;
-import com.mycode.conferencesregistration.exceptions.ConferenceNotFoundException;
-import com.mycode.conferencesregistration.exceptions.DateConferenceIsBusyException;
-import com.mycode.conferencesregistration.exceptions.ExistsConferenceNameException;
-import com.mycode.conferencesregistration.repo.ConferenceRepo;
+import com.mycode.conferencesregistration.domain.dto.ConferenceCreationRequest;
+import com.mycode.conferencesregistration.domain.dto.ConferenceUpdateRequest;
+import com.mycode.conferencesregistration.exception.ConferenceDateBusyException;
+import com.mycode.conferencesregistration.exception.ConferenceNameExistsException;
+import com.mycode.conferencesregistration.exception.ConferenceNotFoundException;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +20,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -29,111 +29,94 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ConferenceServiceImplTest {
 
-    private ConferenceService conferenceService;
+    private ConferenceService service;
 
     @Mock
-    private ConferenceRepo conferenceRepo;
+    private ConferenceDao dao;
+
+    private Long id = 1L;
+    private LocalDate date = LocalDate.of(2020, 4, 10);
+    private Conference dbConference = new Conference(
+            "name", "topic", date, 100);
+    private ConferenceCreationRequest newConference = new ConferenceCreationRequest(
+            "name", "topic", date, 100);
+    private ConferenceUpdateRequest updConference = new ConferenceUpdateRequest("nameNew", "topicNew", date, 200);
 
     @Before
     public void init() {
-        conferenceService = new ConferenceServiceImpl(conferenceRepo);
+        service = new ConferenceServiceImpl(dao);
     }
 
     @Test
     public void findAllConference() {
-        Conference conference =
-                new Conference("name", "topic", LocalDate.now(), 200);
+        when(dao.findAll()).thenReturn(singletonList(dbConference));
 
-        when(conferenceRepo.findAll()).thenReturn(singletonList(conference));
-
-        assertThat(conferenceService.findAll(), hasItem(conference.toDtoGetResponse()));
+        Assertions.assertThat(service.findAll()).containsOnly(dbConference.toDto());
     }
 
     @Test
     public void findAllConferenceReturnEmptyList() {
-        when(conferenceRepo.findAll()).thenReturn(emptyList());
+        when(dao.findAll()).thenReturn(emptyList());
 
-        assertThat(conferenceService.findAll(), is(empty()));
+        Assertions.assertThat(service.findAll()).hasSize(0);
     }
 
     @Test
     public void addConferenceSuccess() {
-        Long id = 1L;
-        Conference dbConference = new Conference("name", "topic", LocalDate.now(), 100);
         dbConference.setId(id);
 
-        when(conferenceRepo.findByNameIgnoreCase(notNull())).thenReturn(emptyList());
-        when(conferenceRepo.findByDateStart(notNull())).thenReturn(emptyList());
-        when(conferenceRepo.save(notNull())).thenReturn(dbConference);
+        when(dao.findByNameIgnoreCase("name")).thenReturn(emptyList());
+        when(dao.findByDateStart(date)).thenReturn(emptyList());
+        when(dao.save(refEq(dbConference, "id"))).thenReturn(dbConference);
 
-        assertThat(conferenceService.addConference(dbConference.toDtoAddRequest()), is(id));
+        Assertions.assertThat(service.addConference(newConference)).isEqualTo(id);
     }
 
-    @Test(expected = ExistsConferenceNameException.class)
+    @Test(expected = ConferenceNameExistsException.class)
     public void addConferenceIfNameExists() {
-        String name = "Курсы языковой школы MasterCLASS";
-        Conference dbConference = new Conference(name, "topic", LocalDate.now(), 100);
+        when(dao.findByNameIgnoreCase("name")).thenReturn(Arrays.asList(dbConference));
 
-        when(conferenceRepo.findByNameIgnoreCase(name)).thenReturn(Arrays.asList(dbConference));
-
-        conferenceService.addConference(dbConference.toDtoAddRequest());
+        service.addConference(newConference);
     }
 
-    @Test(expected = DateConferenceIsBusyException.class)
-    public void addConferenceIfDateBusy() {
-        LocalDate date = LocalDate.now();
-        Conference dbConference = new Conference("name", "topic", date, 100);
+    @Test(expected = ConferenceDateBusyException.class)
+    public void addConferenceIfDateBusied() {
+        when(dao.findByDateStart(date)).thenReturn(Arrays.asList(dbConference));
 
-        when(conferenceRepo.findByDateStart(date)).thenReturn(Arrays.asList(dbConference));
-
-        conferenceService.addConference(dbConference.toDtoAddRequest());
+        service.addConference(newConference);
     }
 
     @Test
     public void editConferenceSuccess() {
-        Long id = 1L;
-        ConferenceDtoAddRequest newConference = new ConferenceDtoAddRequest("nameNew", "topicNew", LocalDate.now(), 200);
-        Conference dbConference = new Conference("name", "topic", LocalDate.now(), 100);
-
-        when(conferenceRepo.findById(id)).thenReturn(java.util.Optional.of(dbConference));
-        when(conferenceRepo.findByNameIgnoreCase(notNull())).thenReturn(emptyList());
-//        when(conferenceRepo.findByDateStart(notNull())).thenReturn(emptyList());
+        when(dao.findById(id)).thenReturn(java.util.Optional.of(dbConference));
+        when(dao.findByNameIgnoreCase("nameNew")).thenReturn(emptyList());
 
         //TODO  что детектить если возвращаем void
-        conferenceService.editConference(id, newConference);
+        service.editConference(id, updConference);
     }
 
     @Test(expected = ConferenceNotFoundException.class)
-    public void editConferenceIfUnknownId() {
-        ConferenceDtoAddRequest newConference = new ConferenceDtoAddRequest("nameNew", "topicNew", LocalDate.now(), 200);
+    public void editConferenceIfConferenceNotFoundThenThrowException() {
+        when(dao.findById(id)).thenReturn(Optional.empty());
 
-        when(conferenceRepo.findById(notNull())).thenReturn(Optional.empty());
-
-        conferenceService.editConference(1L, newConference);
+        service.editConference(id, updConference);
     }
 
-    @Test(expected = ExistsConferenceNameException.class)
-    public void editConferenceIfNameExists() {
-        ConferenceDtoAddRequest newConference = new ConferenceDtoAddRequest("newName", "topicNew", LocalDate.now(), 200);
-        Conference dbConference = new Conference("name", "topic", LocalDate.now(), 100);
+    @Test(expected = ConferenceNameExistsException.class)
+    public void editConferenceIfNameExistsThenThrowException() {
+        when(dao.findById(id)).thenReturn(Optional.of(dbConference));
+        when(dao.findByNameIgnoreCase("nameNew")).thenReturn(Arrays.asList(dbConference));
 
-        when(conferenceRepo.findById(notNull())).thenReturn(Optional.of(dbConference));
-        when(conferenceRepo.findByNameIgnoreCase(notNull())).thenReturn(Arrays.asList(dbConference));
-
-        conferenceService.editConference(1L, newConference);
+        service.editConference(id, updConference);
     }
 
-    @Test(expected = DateConferenceIsBusyException.class)
-    public void editConferenceIfDateBusy() {
-        ConferenceDtoAddRequest newConference = new ConferenceDtoAddRequest("newName", "topicNew",
-                LocalDate.of(2020, 1, 1), 200);
-        Conference dbConference = new Conference("name", "topic",
-                LocalDate.of(2020, 4, 9), 100);
+    @Test(expected = ConferenceDateBusyException.class)
+    public void editConferenceIfDateBusyThenThrowException() {
+        dbConference.setDateStart(LocalDate.of(2020, 1, 1));
 
-        when(conferenceRepo.findById(notNull())).thenReturn(Optional.of(dbConference));
-        when(conferenceRepo.findByNameIgnoreCase(notNull())).thenReturn(emptyList());
-        when(conferenceRepo.findByDateStart(notNull())).thenReturn(Arrays.asList(dbConference));
+        when(dao.findById(id)).thenReturn(Optional.of(dbConference));
+        when(dao.findByDateStart(date)).thenReturn(Arrays.asList(dbConference));
 
-        conferenceService.editConference(1L, newConference);
+        service.editConference(id, updConference);
     }
 }

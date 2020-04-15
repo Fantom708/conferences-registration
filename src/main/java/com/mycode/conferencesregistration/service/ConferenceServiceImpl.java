@@ -1,12 +1,13 @@
 package com.mycode.conferencesregistration.service;
 
+import com.mycode.conferencesregistration.dao.ConferenceDao;
 import com.mycode.conferencesregistration.domain.Conference;
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoAddRequest;
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoGetResponse;
-import com.mycode.conferencesregistration.exceptions.ConferenceNotFoundException;
-import com.mycode.conferencesregistration.exceptions.DateConferenceIsBusyException;
-import com.mycode.conferencesregistration.exceptions.ExistsConferenceNameException;
-import com.mycode.conferencesregistration.repo.ConferenceRepo;
+import com.mycode.conferencesregistration.domain.dto.ConferenceCreationRequest;
+import com.mycode.conferencesregistration.domain.dto.ConferenceDto;
+import com.mycode.conferencesregistration.domain.dto.ConferenceUpdateRequest;
+import com.mycode.conferencesregistration.exception.ConferenceDateBusyException;
+import com.mycode.conferencesregistration.exception.ConferenceNameExistsException;
+import com.mycode.conferencesregistration.exception.ConferenceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -22,19 +23,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ConferenceServiceImpl implements ConferenceService {
 
-    private final ConferenceRepo conferenceRepo;
+    private final ConferenceDao conferenceDao;
 
     @Override
-    public List<ConferenceDtoGetResponse> findAll() {
-        return conferenceRepo.findAll()
+    public List<ConferenceDto> findAll() {
+        return conferenceDao.findAll()
                 .stream()
-                .map(item -> item.toDtoGetResponse())
+                .map(item -> item.toDto())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public long addConference(ConferenceDtoAddRequest conference) {
-
+    public long addConference(ConferenceCreationRequest conference) {
         checkConferenceName(conference.getName());
         checkConferenceDate(conference.getDateStart());
 
@@ -44,12 +44,12 @@ public class ConferenceServiceImpl implements ConferenceService {
                 conference.getDateStart(),
                 conference.getAmountParticipants());
 
-        return conferenceRepo.save(dbConference).getId();
+        return conferenceDao.save(dbConference).getId();
     }
 
     @Override
-    public void editConference(Long id, ConferenceDtoAddRequest newConference) {
-        Conference conference = conferenceRepo.findById(id)
+    public void editConference(Long id, ConferenceUpdateRequest newConference) {
+        Conference conference = conferenceDao.findById(id)
                 .orElseThrow(() -> new ConferenceNotFoundException(id));
 
         if (!conference.getName().equals(newConference.getName())) {
@@ -61,20 +61,20 @@ public class ConferenceServiceImpl implements ConferenceService {
 
         BeanUtils.copyProperties(newConference, conference);
 
-        conferenceRepo.save(conference);
+        conferenceDao.save(conference);
     }
 
     private void checkConferenceName(String name) {
         // Перевірка унікальності назви конференції
-        if (!conferenceRepo.findByNameIgnoreCase(name).isEmpty()) {
-            throw new ExistsConferenceNameException(name);
+        if (!conferenceDao.findByNameIgnoreCase(name).isEmpty()) {
+            throw new ConferenceNameExistsException(name);
         }
     }
 
     private void checkConferenceDate(LocalDate date) {
         //Перевірка вільної дати проведення конференції
-        if (!conferenceRepo.findByDateStart(date).isEmpty()) {
-            throw new DateConferenceIsBusyException(date);
+        if (!conferenceDao.findByDateStart(date).isEmpty()) {
+            throw new ConferenceDateBusyException(date);
         }
     }
 

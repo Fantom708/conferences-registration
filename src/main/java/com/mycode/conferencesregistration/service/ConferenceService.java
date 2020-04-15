@@ -1,7 +1,8 @@
 package com.mycode.conferencesregistration.service;
 
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoAddRequest;
-import com.mycode.conferencesregistration.domain.dto.ConferenceDtoGetResponse;
+import com.mycode.conferencesregistration.domain.dto.ConferenceCreationRequest;
+import com.mycode.conferencesregistration.domain.dto.ConferenceDto;
+import com.mycode.conferencesregistration.domain.dto.ConferenceUpdateRequest;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ import java.util.List;
  */
 public interface ConferenceService {
 
-    List<ConferenceDtoGetResponse> findAll();
+    List<ConferenceDto> findAll();
 
-    long addConference(ConferenceDtoAddRequest conference);
+    long addConference(ConferenceCreationRequest conference);
 
-    void editConference(Long id, ConferenceDtoAddRequest newConference);
+    void editConference(Long id, ConferenceUpdateRequest newConference);
 }
