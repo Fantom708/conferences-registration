@@ -1,6 +1,6 @@
 <!--<!DOCTYPE dataset SYSTEM "database.dtd">-->
 
 <dataset>
-    <CONFERENCE id="2" name="First" topic="Topic2" date_start="2020-04-10" amount_participants="100"/>
-    <CONFERENCE id="3" name="Second" topic="Topic3" date_start="2020-04-10" amount_participants="200"/>
+    <conference id="2" name="First" topic="Topic2" date_start="2020-04-10" amount_participants="100"/>
+    <conference id="3" name="Second" topic="Topic3" date_start="2020-04-10" amount_participants="200"/>
 </dataset>

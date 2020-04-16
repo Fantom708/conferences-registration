@@ -91,7 +91,6 @@ public class ConferenceServiceImplTest {
         when(dao.findById(id)).thenReturn(java.util.Optional.of(dbConference));
         when(dao.findByNameIgnoreCase("nameNew")).thenReturn(emptyList());
 
-        //TODO  что детектить если возвращаем void
         service.editConference(id, updConference);
     }
 

@@ -42,13 +42,6 @@ public class Conference {
     )
     private Set<Talk> talks = new HashSet<>();
 
-    // TODO kill ?
-//    public Set<TalkDto> toDtoTalks() {
-//        return talks.stream().
-//                map(item -> item.toDto()).
-//                collect(Collectors.toSet());
-//    }
-
     public ConferenceDto toDto() {
         return new ConferenceDto(id, name, topic, dateStart, amountParticipants);
     }

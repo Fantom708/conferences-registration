@@ -2,7 +2,7 @@
 http://localhost:8080/conferences
 
 ### GET request all Reports by Conference id
-http://localhost:8080/conferences/5/talks
+http://localhost:8080/conferences/1/talks
 
 ### POST request to add a new Conference
 POST http://localhost:8080/conferences

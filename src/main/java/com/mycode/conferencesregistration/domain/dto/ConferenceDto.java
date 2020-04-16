@@ -14,8 +14,6 @@ public class ConferenceDto {
     Long id;
     String name;
     String topic;
-    //TODO kill ?
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate dateStart;
     int amountParticipants;
 }

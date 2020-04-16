@@ -26,8 +26,10 @@ create table conferences_talks (
 
 alter table if exists conferences_talks
      add constraint conference_talk_fk
-     foreign key (conference_id) references conference;
+     foreign key (conference_id) references conference
+     MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;
 
 alter table if exists conferences_talks
      add constraint talk_conf_fk
-     foreign key (talk_id) references talk;
+     foreign key (talk_id) references talk
+     MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;

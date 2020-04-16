@@ -12,6 +12,6 @@ public class TalkDto {
     Long id;
     String name;
     String description;
-    TypeTalk typeReport;
+    TypeTalk typeTalk;
     String reporter;
 }

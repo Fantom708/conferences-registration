@@ -1,28 +1,25 @@
 {
-  "CONFERENCE": [
+  "conference": [
     {
       "id": 1,
       "name": "IT news",
       "topic": "WORKSHOP",
-      "date": "2020-05-01",
-      "amountParticipants": 100,
-      "reports": []
+      "dateStart": "2020-05-01",
+      "amountParticipants": 100
     },
     {
       "id": 2,
       "name": "Английский для дошкольников",
       "topic": "MASTER_CLASS",
-      "date": "2020-05-14",
-      "amountParticipants": 200,
-      "reports": []
+      "dateStart": "2020-05-14",
+      "amountParticipants": 200
     },
     {
       "id": 3,
       "name": "Курсы языковой школы MasterCLASS",
       "topic": "Английский для дошкольников",
-      "date": "2020-05-14",
-      "amountParticipants": 200,
-      "reports": []
+      "dateStart": "2020-05-14",
+      "amountParticipants": 200
     }
   ]
 }

@@ -1,0 +1,11 @@
+conference:
+  - id: 2
+    name: "First"
+    topic: "Topic2"
+    date_start: "2020-04-10"
+    amount_participants: 100
+  - id: 3
+    name: "Second"
+    topic: "Topic3"
+    date_start: "2020-04-10"
+    amount_participants: 200

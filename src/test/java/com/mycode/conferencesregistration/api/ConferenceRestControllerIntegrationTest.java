@@ -1,5 +1,6 @@
 package com.mycode.conferencesregistration.api;
 
+import com.mycode.conferencesregistration.domain.Conference;
 import com.mycode.conferencesregistration.domain.dto.ConferenceCreationRequest;
 import com.mycode.conferencesregistration.domain.dto.ConferenceUpdateRequest;
 import com.mycode.conferencesregistration.exception.ConferenceDateBusyException;
@@ -16,12 +17,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -61,6 +63,22 @@ public class ConferenceRestControllerIntegrationTest {
 
     private String conferenceToJson(ConferenceUpdateRequest conference) {
         return conferenceToJson(conference.getName(), conference.getTopic(), conference.getDateStart(), conference.getAmountParticipants());
+    }
+
+
+    @Test
+    public void getAllConferencesSuccess() throws Exception {
+        when(service.findAll()).thenReturn(Arrays.asList(
+                new Conference("name", "topic", date, 300).toDto()));
+
+        mockMvc.perform(get(requestMapping)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].topic").value("topic"))
+                .andExpect(jsonPath("$[0].dateStart").value(date.toString()))
+                .andExpect(jsonPath("$[0].amountParticipants").value(300));
     }
 
     @Test
@@ -141,13 +159,11 @@ public class ConferenceRestControllerIntegrationTest {
     public void editConferencesIfConferenceNotFoundThenConflict() throws Exception {
         doThrow(new ConferenceNotFoundException(id))
                 .when(service)
-                .editConference(id, newConference);
+                .editConference(eq(id), refEq(newConference));
 
         mockMvc.perform(put(requestMapping + "/" + String.valueOf(id))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(conferenceToJson(newConference)))
-                .andExpect(status().isConflict());
-
-        service.editConference(id, newConference);
+                .andExpect(status().isNotFound());
     }
 }

@@ -1,7 +1,9 @@
 package com.mycode.conferencesregistration.api;
 
+import com.mycode.conferencesregistration.domain.Talk;
 import com.mycode.conferencesregistration.domain.TypeTalk;
 import com.mycode.conferencesregistration.domain.dto.TalkCreationRequest;
+import com.mycode.conferencesregistration.domain.dto.TalkDto;
 import com.mycode.conferencesregistration.exception.ConferenceNotFoundException;
 import com.mycode.conferencesregistration.exception.LimitByNewTalkWasReachedException;
 import com.mycode.conferencesregistration.exception.RegistrationDateWasLateException;
@@ -16,8 +18,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashSet;
+
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -54,8 +60,25 @@ public class TalkRestControllerIntegrationTest {
     }
 
     @Test
+    public void getAllConferencesSuccess() throws Exception {
+        when(service.getTalks(idConference)).thenReturn(
+                new HashSet<TalkDto>() {{
+                    add(new Talk("name", "description", TypeTalk.REPORT, "reporter").toDto());
+                }});
+
+        mockMvc.perform(get(String.format(requestMapping, idConference))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].description").value("description"))
+                .andExpect(jsonPath("$[0].typeTalk").value(TypeTalk.REPORT.toString()))
+                .andExpect(jsonPath("$[0].reporter").value("reporter"));
+    }
+
+    @Test
     public void addTalkSuccess() throws Exception {
-        when(service.addTalkToConference(refEq(idConference), refEq(talk)))
+        when(service.addTalkToConference(eq(idConference), refEq(talk)))
                 .thenReturn(idTalk);
 
         mockMvc.perform(post(String.format(requestMapping, idConference))
@@ -68,7 +91,7 @@ public class TalkRestControllerIntegrationTest {
 
     @Test
     public void addTalkIfConferenceNotFound() throws Exception {
-        when(service.addTalkToConference(refEq(idConference), refEq(talk)))
+        when(service.addTalkToConference(eq(idConference), refEq(talk)))
                 .thenThrow(new ConferenceNotFoundException(idConference));
 
         mockMvc.perform(post(String.format(requestMapping, idConference))
@@ -79,7 +102,7 @@ public class TalkRestControllerIntegrationTest {
 
     @Test
     public void addTalkIfNameExistsThenConflict() throws Exception {
-        when(service.addTalkToConference(refEq(idConference), refEq(talk)))
+        when(service.addTalkToConference(eq(idConference), refEq(talk)))
                 .thenThrow(new TalkNameExistsException(talk.getReporter()));
 
         mockMvc.perform(post(String.format(requestMapping, idConference))
@@ -90,7 +113,7 @@ public class TalkRestControllerIntegrationTest {
 
     @Test
     public void addTalkIfTalksLimitWasReachedThenBadRequest() throws Exception {
-        when(service.addTalkToConference(refEq(idConference), refEq(talk)))
+        when(service.addTalkToConference(eq(idConference), refEq(talk)))
                 .thenThrow(new LimitByNewTalkWasReachedException(talk.getReporter(), 3));
 
         mockMvc.perform(post(String.format(requestMapping, idConference))
@@ -101,7 +124,7 @@ public class TalkRestControllerIntegrationTest {
 
     @Test
     public void addTalkIfDateRegistrationLessThanAllowThenBadRequest() throws Exception {
-        when(service.addTalkToConference(refEq(idConference), refEq(talk)))
+        when(service.addTalkToConference(eq(idConference), refEq(talk)))
                 .thenThrow(new RegistrationDateWasLateException(30));
 
         mockMvc.perform(post(String.format(requestMapping, idConference))
