@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard
+  labels:
+    app: kuard
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: kuard
+      labels:
+        app: kuard
+    spec:
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: ssh-key-secret
+      containers:
+        - name: kuard
+          image: gcr.io/kuar-demo/kuard-amd64:1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: env-db-config
+          env:
+            - name: DB-URL
+              valueFrom:
+                configMapKeyRef:
+                  name: aval-env-config
+                  key: db.url
+          volumeMounts:
+            - mountPath: "/etc/secret-volume"
+              name: secret-volume
+              readOnly: true
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: kuard
