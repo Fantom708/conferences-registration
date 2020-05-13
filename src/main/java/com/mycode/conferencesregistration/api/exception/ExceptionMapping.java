@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,20 @@ public class ExceptionMapping {
         ex.getBindingResult().getFieldErrors().
                 forEach(error ->
                         errors.put(error.getField(), error.getDefaultMessage()));
+
+        return errors;
+    }
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Map<String, String> handleConstraintValidationExceptions(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations().stream().
+                forEach(error ->
+                        errors.put(
+                                error.getPropertyPath().toString().substring(error.getPropertyPath().toString().lastIndexOf(".")+1),
+                                error.getMessage()));
 
         return errors;
     }

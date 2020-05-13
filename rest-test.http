@@ -2,32 +2,31 @@
 http://localhost:8080/conferences
 
 ### GET request all Reports by Conference id
-http://localhost:8080/conferences/1/talks
+http://localhost:8080/conferences/2/talks
 
 ### POST request to add a new Conference
 POST http://localhost:8080/conferences
 Content-Type: application/json
 
   {
-    "name": "Курсы языковой школы MasterCLASS",
+    "name": "",
     "topic": "Английский для дошкольников",
-    "dateStart": "2020-05-22",
-    "amountParticipants":100
+    "amountParticipants":10
   }
 
 ### PUT request to edit an existing Conference
-PUT http://localhost:8080/conferences/1
+PUT http://localhost:8080/conferences/2
 Content-Type: application/json
 
 {
   "name": "MEDICAL DEVICE FORUM 2020",
   "topic": "Влияние Регламента о медицинских изделиях (MDR) на производителей. Новые обязательства для импортеров и дистрибьюторов. И многое другое.",
-  "dateStart": "2020-05-05",
+  "dateStart": "2029-05-05",
   "amountParticipants":1500
 }
 
 ### POST request to add a Report to the Conference
-POST http://localhost:8080/conferences/5/talks
+POST http://localhost:8080/conferences/2/talks
 Content-Type: application/json
 
 {

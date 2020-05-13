@@ -4,6 +4,7 @@ import com.mycode.conferencesregistration.domain.dto.ConferenceCreationRequest;
 import com.mycode.conferencesregistration.domain.dto.ConferenceDto;
 import com.mycode.conferencesregistration.domain.dto.ConferenceUpdateRequest;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public interface ConferenceService {
 
     List<ConferenceDto> findAll();
 
-    long addConference(ConferenceCreationRequest conference);
+    long addConference(@Valid ConferenceCreationRequest conference);
 
     void editConference(Long id, ConferenceUpdateRequest newConference);
 }

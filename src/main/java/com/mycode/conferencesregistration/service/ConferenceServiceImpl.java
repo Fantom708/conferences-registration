@@ -11,7 +11,9 @@ import com.mycode.conferencesregistration.exception.ConferenceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
  * @author Yurii Kovtun
  */
 @Service
+@Validated
 @RequiredArgsConstructor
 public class ConferenceServiceImpl implements ConferenceService {
 
@@ -34,7 +37,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     @Override
-    public long addConference(ConferenceCreationRequest conference) {
+    public long addConference(@Valid ConferenceCreationRequest conference) {
         checkConferenceName(conference.getName());
         checkConferenceDate(conference.getDateStart());
 

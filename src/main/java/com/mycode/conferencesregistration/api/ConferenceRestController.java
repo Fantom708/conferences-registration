@@ -39,7 +39,7 @@ public class ConferenceRestController {
     }
 
     @PostMapping
-    public ConferenceState addConference(@Valid @RequestBody ConferenceCreationRequest conference) {
+    public ConferenceState addConference(@RequestBody ConferenceCreationRequest conference) {
         long id = conferenceService.addConference(conference);
         counter.increment();
 
